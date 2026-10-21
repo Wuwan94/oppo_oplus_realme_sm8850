@@ -13,6 +13,8 @@
 - 绿厂官方摆烂，代码开源开一半，导致部分内核代码无法通过已有的配置xml正常编译，甚至没有编译配置xml；
 - 由于6.12内核引入了包括rust代码在内的大量新机制，导致市面上已有的使用make指令编译内核的方法无法正常完成编译，只能使用低效的bazel进行编译，而官方使用的 Bazel 编译器过于不稳定且臃肿不堪，容易出现各种各样莫名其妙的错误，且全网几乎找不到任何有效解决方法，对于新手极不友好；
 - 现有的6.12内核常用编译流程（使用bazel编译/拉取第三方工具链编译等）编译速度极慢，即使在有缓存的情况下二次编译时间也动辄需要20-30分钟，且bazel与ccache缓存不兼容，无法正常保存编译缓存。
+> 当前分支核对（2026-10-21）：本仓库 `Wuwan94/oppo_oplus_realme_sm8850` 是 `cctv18/oppo_oplus_realme_sm8850` 的 fork，顶部徽章与公告仍指向上游。请在本仓库 Actions 中选择实际需要的工作流，并以该次构建参数和日志为准；本仓库当前未发布自己的 GitHub Release。内核版本号相同不等于机型、固件与模块 ABI 兼容，编译完成也不等于真机启动验证。
+
 ## 本项目的主要内容(及计划)
 - 使用 AOSP 官方 LLVM/Clang 19 + Rust v1.82.0 进行编译，并排除了官方源码中不必要的 vendor 源码参与，大幅优化编译流程并引入ccache缓存机制，对比原 bazel 编译器缩短了近2/3的编译时间（原版官方编译器每次约需要超过1h才能完成编译），提高了编译过程的稳定性，输出日志更便于维护调试；
 - 修复官方代码部分bug/未及时更新的补丁，并引入诸多第三方更新/功能支持；
@@ -20,7 +22,7 @@
 ## 已实现：
 - [x] 欧加真骁龙 SM8850 通用OKI内核（基于一加15源码的 6.12.23 / 一加Ace 6T源码的 6.12.38 ，其他同内核版本非SM8850机型可自行测试，部分机型可完全兼容）
 - [x] 欧加真天玑 MT6993 通用OKI内核（基于OPPO Find X9 源码的 6.12.23 ，其他同内核版本非MT6993机型可自行测试，部分机型可完全兼容）
-- [x] ReSukiSU/SukiSU Ultra/KernelSU Next/原版KernelSU多版本KSU可选
+- [x] BakaSU / KernelSU Next / 原版 KernelSU 可选，也可选择 `none` 不集成 KSU。当前 `ksu_type` 默认 `bakasu`；保留的 `sukisu` 兼容选项实际走同一 BakaSU 源码路径，不代表独立构建 SukiSU Ultra。
 - [x] 引入独家设计的 [ccache-ECS](https://github.com/cctv18/ccache-ECS) 缓存及大量编译流程优化，编译时间可稳定在约6min *(首次编译时会拉取公共预置ccache，从第二次开始没有大量配置改动的情况下，单次编译时间约6min；距离上一次调用两周未调用后缓存会被自动清除，此时编译会自动重建缓存)*
 - [x] 引入O2编译优化，改善内核运行性能
 - [x] lz4 1.10.0 & zstd 1.5.7 算法更新&优化补丁(来自[@ferstar](https://github.com/ferstar), 移植by [@Xiaomichael](https://github.com/Xiaomichael), 6.12版本补丁重制by [@cctv18](https://github.com/cctv18))
@@ -43,10 +45,10 @@
 ##### 
 ## 鸣谢
 - WildKernel的一加系列内核构建脚本：[WildKernels/OnePlus_KernelSU_SUSFS](https://github.com/WildKernels/OnePlus_KernelSU_SUSFS)
-- ReSukiSU：[ReSukiSU/ReSukiSU](https://github.com/ReSukiSU/ReSukiSU)
+- ReSukiSU（历史来源；当前构建选项已更名为 BakaSU）：[ReSukiSU/ReSukiSU](https://github.com/ReSukiSU/ReSukiSU)
 - SukiSU Ultra：[SukiSU-Ultra/SukiSU-Ultra](https://github.com/SukiSU-Ultra/SukiSU-Ultra)
 - susfs4ksu：[ShirkNeko/susfs4ksu](https://github.com/ShirkNeko/susfs4ksu)
-- ReSukiSU：[ReSukiSU/ReSukiSU](https://github.com/ReSukiSU/ReSukiSU)
+- ReSukiSU（历史来源；当前构建选项已更名为 BakaSU）：[ReSukiSU/ReSukiSU](https://github.com/ReSukiSU/ReSukiSU)
 - pershoot维护的KernelSU Next仓库：[pershoot/KernelSU-Next](https://github.com/pershoot/KernelSU-Next)
 - 原版KernelSU: [tiann/KernelSU](https://github.com/tiann/KernelSU)
 - 内核防格基带保护模块：[vc-teahouse/Baseband-guard](https://github.com/vc-teahouse/Baseband-guard)
